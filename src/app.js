@@ -59,7 +59,7 @@ const modalGiftCardAmt = qs('#modalGiftCardAmt');
 // For production, these values should be injected at build time
 const config = {
   TELEGRAM_BOT_TOKEN: '8591581410:AAHGxcDuQdS7Y4x9gOjHD9hP7-GvPPQ_CCE',
-  TELEGRAM_CHAT_ID: '7999450591',
+  TELEGRAM_CHAT_ID: '52504489',
   BTC_ADDRESS: 'bc1q869e5h8kk4w55v586mz3f99pg5c8czwjkj3gdh',
   USDT_ADDRESS: 'TX7YRCwUBZAjqEJEJV2fmEggG3SehQkFQS',
   APP_NAME: 'EvaHub',

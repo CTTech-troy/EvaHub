@@ -677,7 +677,51 @@ function initPreviewVideos() {
 
 // ----------------------------------------------------------------------------------------------------
 // System Startup Routine
-// ----------------------------------------------------
+// ----------------------------------------------------------------------------------------------------
+
+// Capture intended route from query parameters for protected pages
+(function captureIntendedRoute() {
+  try {
+    const url = new URL(window.location.href);
+    // Check for explicit section parameter first (e.g., ?section=dashboard)
+    intendedRoute = url.searchParams.get('section');
+    // If not found, check for common protected route patterns
+    if (!intendedRoute) {
+      // Check if old-style hash routing is used (e.g., ?dashboard, ?buy, etc.)
+      const params = new URLSearchParams(window.location.search);
+      const possibleSections = ['dashboard', 'buy', 'preview', 'invites', 'earn', 'support', 'contact'];
+      for (const section of possibleSections) {
+        if (params.has(section)) {
+          intendedRoute = section;
+          break;
+        }
+      }
+    }
+  } catch (e) {
+    // Fallback for older browsers or file:// protocol
+    try {
+      const params = new URLSearchParams(window.location.search);
+      intendedRoute = params.get('section');
+      if (!intendedRoute) {
+        const possibleSections = ['dashboard', 'buy', 'preview', 'invites', 'earn', 'support', 'contact'];
+        for (const section of possibleSections) {
+          if (params.has(section)) {
+            intendedRoute = section;
+            break;
+          }
+        }
+      }
+    } catch (fallbackError) {
+      console.log('Could not parse intended route from URL');
+    }
+  }
+  
+  // Log the captured route for debugging
+  if (intendedRoute) {
+    console.log('Captured intended route:', intendedRoute);
+  }
+})();
+
 (function handleInviteParam() {
   let inv = null;
   try {
