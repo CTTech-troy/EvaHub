@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EvaHub — Premium Access</title>
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+  <!-- Dynamic Animated Background -->
+  <div class="bg-mesh">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div id="app" class="locked">
+
+    <!-- TOPBAR (Mobile & Compact View) -->
+    <header class="topbar hidden" id="topbar">
+      <button id="menuBtn" class="icon-btn"><i data-lucide="menu"></i></button>
+      <div class="brand-title">
+        <i data-lucide="hexagon" class="brand-icon"></i> EvaHub
+      </div>
+      <div class="profile-chip" id="profileBtn">
+        <div class="avatar-mini" id="topAvatar">G</div>
+        <span id="displayName">Guest</span>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <nav id="sidebar" class="sidebar hidden">
+      <div class="sidebar-header">
+        <div class="brand-title">
+          <i data-lucide="hexagon" class="brand-icon"></i> EvaHub
+        </div>
+        <button id="closeMenuBtn" class="icon-btn mobile-only"><i data-lucide="x"></i></button>
+      </div>
+      <div class="profile-block">
+        <div class="avatar-large" id="sideAvatar">G</div>
+        <div class="user-info">
+          <div class="name" id="sideName">Visitor</div>
+          <div class="email" id="sideEmail">Not signed in</div>
+        </div>
+      </div>
+      <ul class="menu">
+        <li data-show="dashboard" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</li>
+        <li data-show="buy"><i data-lucide="shopping-cart"></i> Premium Plans</li>
+        <li data-show="preview"><i data-lucide="play-square"></i> Preview Library</li>
+        <li data-show="invites"><i data-lucide="users"></i> My Invites</li>
+        <li data-show="earn"><i data-lucide="gift"></i> Earn Access</li>
+        <li data-show="support"><i data-lucide="message-circle"></i> Live Support</li>
+        <li data-show="contact"><i data-lucide="credit-card"></i> Contact & Pay</li>
+        <li id="logoutBtn" style="margin-top: auto; color: #ff4a4a;"><i data-lucide="log-out"></i> Sign Out</li>
+      </ul>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="main">
+      <!-- AUTH SECTION (Login First Constraint) -->
+      <section id="auth" class="section-view active">
+        <div class="auth-wrapper">
+          <div class="card glass-card auth-card tilt-effect">
+            <div class="auth-icon-wrapper">
+              <i data-lucide="fingerprint" class="auth-icon"></i>
+            </div>
+            <h2>Enter the Hub</h2>
+            <p class="subtitle" style="margin-bottom: 30px;">Authenticate to browse premium courses or purchase a
+              bundle.</p>
+            <div class="input-group">
+              <i data-lucide="user"></i>
+              <input id="inputName" type="text" placeholder="Choose a Display Name" />
+            </div>
+            <div class="input-group">
+              <i data-lucide="mail"></i>
+              <input id="inputEmail" type="email" placeholder="Email Address (Optional)" />
+            </div>
+            <button id="createBtn" class="btn primary glow-btn" style="width: 100%; margin: 10px 0 20px;">
+              <span>Unlock Gateway</span>
+              <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="section-view hidden">
+        <div class="header-banner card glass-card tilt-effect strict">
+          <h1>Welcome back, <span id="dashName" class="gradient-text">Guest</span></h1>
+          <p>Access your bundles, monitor invites, and manage your tier status.</p>
+        </div>
+
+        <div class="grid-2 mt-4">
+          <div class="card glass-card stat-card tilt-effect strict">
+            <div class="stat-icon"><i data-lucide="users"></i></div>
+            <div class="stat-info">
+              <h3>Total Invites</h3>
+              <div class="big" id="totalInvites">0</div>
+            </div>
+          </div>
+          <div class="card glass-card stat-card tilt-effect strict">
+            <div class="stat-icon tier"><i data-lucide="award"></i></div>
+            <div class="stat-info">
+              <h3>Current Tier</h3>
+              <div class="big gradient-text" id="currentTier" style="font-size: 28px;">Standard</div>
+            </div>
+          </div>
+          <div class="card glass-card stat-card tilt-effect strict">
+            <div class="stat-icon video"><i data-lucide="video"></i></div>
+            <div class="stat-info">
+              <h3>Content Unlocked</h3>
+              <div class="big" id="videosUnlocked">0</div>
+            </div>
+          </div>
+          <div class="card glass-card stat-card tilt-effect strict">
+            <div class="stat-icon next"><i data-lucide="trending-up"></i></div>
+            <div class="stat-info">
+              <h3>Invites to next tier</h3>
+              <div class="big" id="toNext">30</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card glass-card mt-4 tilt-effect strict">
+          <div class="card-header">
+            <div class="header-icon" style="background: rgba(255, 123, 0, 0.1); color: var(--accent-main);"><i
+                data-lucide="share-2"></i></div>
+            <div>
+              <h3 style="margin-bottom: 2px;">Invite Network</h3>
+              <p class="muted-text small">Share your unique link below to unlock free access point by point.</p>
+            </div>
+          </div>
+          <div class="invite-box" style="margin-top: 20px;">
+            <input id="inviteLink" readonly />
+            <button id="copyInvite" class="btn secondary"><i data-lucide="copy"></i> Copy Link</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PREMIUM BUY PLANS -->
+      <section id="buy" class="section-view hidden">
+        <div class="section-header">
+          <h2>Plans &amp; Purchase</h2>
+          <p>Unlock lifetime access to our exclusive, meticulously curated course libraries.</p>
+        </div>
+
+        <!-- PLANS MARKETPLACE TABLE -->
+        <div class="card glass-card tilt-effect strict" style="margin-top: 20px; overflow: hidden;">
+          <table class="plans-table">
+            <thead>
+              <tr>
+                <th>Plan Name</th>
+                <th>Price</th>
+                <th>Storage</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="plan-row" data-plan='{"id": "basic", "price": 25, "title": "Basic Plan", "megalink": "https://mega.nz/fake-basic"}'>
+                <td><strong>Basic Plan</strong></td>
+                <td class="price-cell"><span class="price-badge">$25</span></td>
+                <td>40GB Course Bundle</td>
+                <td><span class="status-badge">Standard</span></td>
+                <td><button class="btn secondary buyBtn" style="padding: 8px 16px; font-size: 13px;">Buy Now</button></td>
+              </tr>
+              <tr class="plan-row popular-row" data-plan='{"id": "tier1", "price": 35, "title": "Tier 1", "megalink": "https://mega.nz/fake-tier1"}'>
+                <td><strong>Tier 1</strong> <span class="popular-badge">⭐ POPULAR</span></td>
+                <td class="price-cell"><span class="price-badge primary">$35</span></td>
+                <td>60GB Course Bundle</td>
+                <td><span class="status-badge popular">Featured</span></td>
+                <td><button class="btn primary glow-btn buyBtn" style="padding: 8px 16px; font-size: 13px; background: #ff7b00; border: none;">Buy Now</button></td>
+              </tr>
+              <tr class="plan-row" data-plan='{"id": "tier2", "price": 55, "title": "Tier 2", "megalink": "https://mega.nz/fake-tier2"}'>
+                <td><strong>Tier 2</strong></td>
+                <td class="price-cell"><span class="price-badge">$55</span></td>
+                <td>90GB Course Bundle</td>
+                <td><span class="status-badge">Premium</span></td>
+                <td><button class="btn secondary buyBtn" style="padding: 8px 16px; font-size: 13px;">Buy Now</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="muted-text small" style="margin-top: 25px; text-align: center;">After payment, mark the payment as
+          completed in the confirmation box and an admin will review and send the megalink. (Demo: no real backend)</p>
+      </section>
+
+      <!-- PREVIEW -->
+      <section id="preview" class="section-view hidden">
+        <div class="section-header">
+          <h2>🔥 Epstein Files Mega Leaks</h2>
+          <p>Exclusive content from the world's most notorious leaks - subscribe for full access to the archive.</p>
+        </div>
+        <div class="preview-grid" id="previewGrid">
+          <!-- PREVIEW ITEM 1: VIDEO -->
+          <div class="preview-card preview-video">
+            <div class="preview-media-container">
+              <video class="preview-video-player" muted playsinline data-duration="3">
+                <source src="src/assets/WhatsApp Video 2026-03-07 at 6.52.59 AM.mp4" type="video/mp4">
+              </video>
+              <div class="preview-watermark">
+                <div class="watermark-text">PREVIEW • SUBSCRIBE FOR FULL</div>
+                <div class="watermark-logo">EVAHUB</div>
+              </div>
+              <div class="preview-overlay">
+                <div class="preview-subscribe-prompt">
+                  <i data-lucide="lock"></i>
+                  <p>Subscribe to Watch Full Video</p>
+                  <button class="btn primary small-btn" onclick="navigateTo('buy');">Subscribe Now</button>
+                </div>
+              </div>
+              <div class="preview-timer" style="display: none;">00:03</div>
+            </div>
+            <div class="preview-info">
+              <h4>🔥 Epstein's Private Sessions - Mega Leaks</h4>
+              <p class="small">Exclusive footage from the island - uncensored & raw</p>
+              <span class="preview-badge video-badge"><i data-lucide="play"></i> 12:45</span>
+            </div>
+          </div>
+
+          <!-- PREVIEW ITEM 2: IMAGE -->
+          <!-- <div class="preview-card preview-image">
+            <div class="preview-media-container">
+              <img src="src/assets/WhatsApp Image 2026-03-07 at 6.51.14 AM.jpeg" alt="Preview" class="preview-image-img">
+              <div class="preview-watermark">
+                <div class="watermark-text">PREVIEW • SUBSCRIBE FOR FULL</div>
+                <div class="watermark-logo">EVAHUB</div>
+              </div>
+              <div class="preview-overlay">
+                <div class="preview-subscribe-prompt">
+                  <i data-lucide="lock"></i>
+                  <p>Subscribe to See More</p>
+                  <button class="btn primary small-btn" onclick="navigateTo('buy');">Subscribe Now</button>
+                </div>
+              </div>
+            </div>
+            <div class="preview-info">
+              <h4>💋 Secret Island Photos - Epstein Files</h4>
+              <p class="small">Never-before-seen images from Little St. James</p>
+              <span class="preview-badge image-badge"><i data-lucide="image"></i> Photo</span>
+            </div>
+          </div> -->
+
+          <!-- PREVIEW ITEM 3: VIDEO -->
+          <div class="preview-card preview-video">
+            <div class="preview-media-container">
+              <video class="preview-video-player" muted playsinline data-duration="3">
+                <source src="src/assets/WhatsApp Video 2026-03-07 at 6.53.22 AM.mp4" type="video/mp4">
+              </video>
+              <div class="preview-watermark">
+                <div class="watermark-text">PREVIEW • SUBSCRIBE FOR FULL</div>
+                <div class="watermark-logo">EVAHUB</div>
+              </div>
+              <div class="preview-overlay">
+                <div class="preview-subscribe-prompt">
+                  <i data-lucide="lock"></i>
+                  <p>Subscribe to Watch Full Video</p>
+                  <button class="btn primary small-btn" onclick="navigateTo('buy');">Subscribe Now</button>
+                </div>
+              </div>
+              <div class="preview-timer">00:03</div>
+            </div>
+            <div class="preview-info">
+              <h4>📞 Epstein's Black Book - VIP Contacts</h4>
+              <p class="small">Private phone numbers & addresses of the elite</p>
+              <span class="preview-badge video-badge"><i data-lucide="play"></i> 8:30</span>
+            </div>
+          </div>
+
+          <!-- PREVIEW ITEM 4: VIDEO -->
+          <div class="preview-card preview-video">
+            <div class="preview-media-container">
+              <video class="preview-video-player" muted playsinline data-duration="3">
+                <source src="src/assets/WhatsApp Video 2026-03-07 at 6.53.34 AM.mp4" type="video/mp4">
+              </video>
+              <div class="preview-watermark">
+                <div class="watermark-text">PREVIEW • SUBSCRIBE FOR FULL</div>
+                <div class="watermark-logo">EVAHUB</div>
+              </div>
+              <div class="preview-overlay">
+                <div class="preview-subscribe-prompt">
+                  <i data-lucide="lock"></i>
+                  <p>Subscribe to Watch Full Video</p>
+                  <button class="btn primary small-btn" onclick="navigateTo('buy');">Subscribe Now</button>
+                </div>
+              </div>
+              <div class="preview-timer">00:03</div>
+            </div>
+            <div class="preview-info">
+              <h4>📖 Black Book Names - Complete Database</h4>
+              <p class="small">A-list celebrities, politicians & billionaires</p>
+              <span class="preview-badge video-badge"><i data-lucide="play"></i> 15:20</span>
+            </div>
+          </div>
+
+          <!-- PREVIEW ITEM 5: VIDEO -->
+          <div class="preview-card preview-video">
+            <div class="preview-media-container">
+              <video class="preview-video-player" muted playsinline data-duration="3">
+                <source src="src/assets/WhatsApp Video 2026-03-07 at 6.53.40 AM.mp4" type="video/mp4">
+              </video>
+              <div class="preview-watermark">
+                <div class="watermark-text">PREVIEW • SUBSCRIBE FOR FULL</div>
+                <div class="watermark-logo">EVAHUB</div>
+              </div>
+              <div class="preview-overlay">
+                <div class="preview-subscribe-prompt">
+                  <i data-lucide="lock"></i>
+                  <p>Subscribe to Watch Full Video</p>
+                  <button class="btn primary small-btn" onclick="navigateTo('buy');">Subscribe Now</button>
+                </div>
+              </div>
+              <div class="preview-timer">00:03</div>
+            </div>
+            <div class="preview-info">
+              <h4>🏝️ Villa Recordings - Raw & Unfiltered</h4>
+              <p class="small">Hidden camera footage from Epstein's mansion</p>
+              <span class="preview-badge video-badge"><i data-lucide="play"></i> 15:20</span>
+            </div>
+          </div>
+
+          <!-- PREVIEW ITEM 6: VIDEO -->
+          <!-- <div class="preview-card preview-video">
+            <div class="preview-media-container">
+              <video class="preview-video-player" muted playsinline data-duration="3">
+                <source src="src/assets/WhatsApp Video 2026-03-07 at 6.53.42 AM.mp4" type="video/mp4">
+              </video>
+              <div class="preview-watermark">
+                <div class="watermark-text">PREVIEW • SUBSCRIBE FOR FULL</div>
+                <div class="watermark-logo">EVAHUB</div>
+              </div>
+              <div class="preview-overlay">
+                <div class="preview-subscribe-prompt">
+                  <i data-lucide="lock"></i>
+                  <p>Subscribe to Watch Full Video</p>
+                  <button class="btn primary small-btn" onclick="navigateTo('buy');">Subscribe Now</button>
+                </div>
+              </div>
+              <div class="preview-timer">00:03</div>
+            </div>
+            <div class="preview-info">
+              <h4>💰 Financial Records & Assets - Mega Dump</h4>
+              <p class="small">Bank statements, offshore accounts & shell companies</p>
+              <span class="preview-badge video-badge"><i data-lucide="play"></i> 8:30</span>
+            </div>
+          </div> -->
+        </div>
+      </section>
+
+      <!-- INVITES -->
+      <section id="invites" class="section-view hidden">
+        <div class="section-header">
+          <h2>Referral Tracking</h2>
+          <p>Monitor the audience you've brought to EvaHub.</p>
+        </div>
+        <div class="card glass-card empty-state tilt-effect strict">
+          <i data-lucide="venetian-mask" class="large-icon"></i>
+          <h3>No referrals yet.</h3>
+          <p class="muted-text">Navigate to the Earn tab to get your referral link.</p>
+        </div>
+      </section>
+
+      <!-- EARN -->
+      <section id="earn" class="section-view hidden">
+        <div class="section-header">
+          <h2>Unlock via Growth</h2>
+          <p>Short on funds? Leverage your network.</p>
+        </div>
+        <div class="card glass-card tilt-effect strict">
+          <h3 style="margin-bottom: 12px; font-size: 24px;">The Math</h3>
+          <p style="margin-bottom: 8px;"><strong style="color: var(--accent-main)">1 Verified Signup</strong> = 1 Point.
+          </p>
+          <p>Acquire <strong>30 points</strong> to automatically unlock Tier 1 privileges without paying.</p>
+        </div>
+      </section>
+
+      <!-- SUPPORT & CONTACT -->
+      <section id="support" class="section-view hidden">
+        <div class="section-header">
+          <h2>Need Assistance?</h2>
+          <p>Reach out securely via our official channels below.</p>
+        </div>
+        <div class="contact-grid">
+          <a href="https://t.me/Sqyas6" target="_blank" class="card glass-card contact-card tilt-effect">
+            <div class="social-icon telegram"><i data-lucide="send"></i></div>
+            <h3>Telegram Direct</h3>
+            <p>@Sqyas6</p>
+          </a>
+          <a href="mailto:am22yearsqueen@gmail.com" class="card glass-card contact-card tilt-effect">
+            <div class="social-icon email"><i data-lucide="mail"></i></div>
+            <h3>Email Dispatch</h3>
+            <p>am22yearsqueen@gmail.com</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- PAYMENT DETAILS -->
+      <section id="contact" class="section-view hidden">
+        <div class="section-header">
+          <h2>Flexible Payment Methods</h2>
+          <p>Choose your preferred payment method for maximum convenience.</p>
+        </div>
+        
+        <!-- Crypto Payments -->
+        <h3 style="margin-bottom: 20px; font-size: 20px; margin-top: 40px;">Cryptographic Networks</h3>
+        <div class="grid-2">
+          <div class="card glass-card crypto-card tilt-effect strict">
+            <div class="crypto-header">
+              <i data-lucide="bitcoin" style="color: #f7931a;"></i>
+              <h3>Bitcoin (BTC)</h3>
+            </div>
+            <div class="invite-box">
+              <input id="btcAddr" readonly />
+              <button class="btn secondary" id="copyBtc"><i data-lucide="copy"></i></button>
+            </div>
+          </div>
+          <div class="card glass-card crypto-card tilt-effect strict">
+            <div class="crypto-header">
+              <i data-lucide="wallet" style="color: #26a17b;"></i>
+              <h3>USDT (TRC20)</h3>
+            </div>
+            <div class="invite-box">
+              <input id="usdtAddr" readonly />
+              <button class="btn secondary" id="copyUsdt"><i data-lucide="copy"></i></button>
+            </div>
+          </div>
+        </div>
+        <p class="muted-text small mt-4" style="text-align: center;">Send the exact tier amount to any of the addresses above. Then return to the <strong>Purchase Modal</strong> via the Buy tab to verify your Payment Hash (TXID).</p>
+
+        <!-- Gift Card Payments -->
+        <h3 style="margin-bottom: 20px; font-size: 20px; margin-top: 40px;">🎁 Gift Card Payment</h3>
+        <div class="card glass-card tilt-effect strict" style="max-width: 600px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <i data-lucide="gift" style="color: var(--accent-main); width: 24px; height: 24px;"></i>
+            <h4 style="margin: 0; font-size: 18px;">Purchase with Gift Card</h4>
+          </div>
+          
+          <div style="background: rgba(255,123,0,0.08); border: 1px solid rgba(255,123,0,0.2); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 14px;"><strong>Buy gift cards from trusted platforms:</strong></p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+              <a href="https://www.startselect.com" target="_blank" style="padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,123,0,0.3); border-radius: 8px; text-align: center; text-decoration: none; color: var(--accent-main); font-weight: 600; font-size: 13px; transition: all 0.3s;">🛒 Startselect</a>
+              <a href="https://www.eneba.com" target="_blank" style="padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,123,0,0.3); border-radius: 8px; text-align: center; text-decoration: none; color: var(--accent-main); font-weight: 600; font-size: 13px; transition: all 0.3s;">🛍️ Eneba</a>
+              <a href="https://www.g2a.com" target="_blank" style="padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,123,0,0.3); border-radius: 8px; text-align: center; text-decoration: none; color: var(--accent-main); font-weight: 600; font-size: 13px; transition: all 0.3s;">💳 G2A</a>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Gift Card Type</label>
+            <div class="select-wrapper">
+              <select id="giftCardType" style="width: 100%; padding: 12px 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 10px; color: #fff; cursor: pointer;">
+                <option value="">Select Gift Card Type...</option>
+                <option value="Steam">Steam Gift Card</option>
+                <option value="Apple">Apple Gift Card</option>
+                <option value="Razer">Razer Gold Gift Card</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Card Code</label>
+            <div class="input-group">
+              <i data-lucide="key"></i>
+              <input id="giftCardNumber" type="text" placeholder="Enter gift card code" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Card Balance Amount</label>
+            <div class="input-group">
+              <i data-lucide="dollar-sign"></i>
+              <input id="giftCardAmount" type="number" placeholder="e.g., 25.00" step="0.01" />
+            </div>
+          </div>
+
+          <p style="color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--glass-border);">
+            After selecting a plan via the <strong>Premium Plans</strong> tab, you can submit gift card proof for verification.
+          </p>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div style="font-family: var(--font-heading); font-weight: 700; color: #fff; margin-bottom: 8px;">EvaHub</div>
+        <small>Exclusive Member Infrastructure. Contact: <a href="mailto:am22yearsqueen@gmail.com"
+            style="color: var(--accent-main); text-decoration: none;">am22yearsqueen@gmail.com</a></small>
+      </footer>
+    </main>
+  </div>
+
+  <!-- PREMIUM PURCHASE MODAL -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card tilt-effect strict">
+      <button class="modal-close icon-btn" id="modalClose"><i data-lucide="x"></i></button>
+      <div class="modal-header">
+        <div class="modal-icon"><i data-lucide="database"></i></div>
+        <h3 id="modalTitle" class="gradient-text">Complete Acquisition</h3>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      
+      <!-- Payment Method Selection -->
+      <div class="modal-actions" id="paymentMethodSelect" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 40px;">
+        <button id="cryptoPayBtn" class="btn secondary" style="padding: 12px; border: 2px solid var(--glass-border);">
+          <i data-lucide="bitcoin"></i> Crypto
+        </button>
+        <button id="giftCardPayBtn" class="btn secondary" style="padding: 12px; border: 2px solid var(--glass-border);">
+          <i data-lucide="gift"></i> Gift Card
+        </button>
+      </div>
+
+      <div class="modal-actions" id="step1Actions">
+        <button id="iHavePaidBtn" class="btn primary glow-btn full-width" style="margin-top: 10px;">
+          <i data-lucide="check-circle-2"></i> I Have Paid
+        </button>
+      </div>
+
+      <div class="modal-actions hidden" id="step2Actions">
+        <div id="proofInputs">
+          <div class="form-group">
+            <label>Upload Screenshot Proof</label>
+            <div class="input-group">
+              <i data-lucide="image"></i>
+              <input type="file" id="proofImage" accept="image/*" style="padding-left: 50px;" />
+            </div>
+          </div>
+        </div>
+        <button id="confirmPaid" class="btn primary glow-btn full-width" style="margin-top: 10px;">
+          <i data-lucide="upload-cloud"></i> Upload & Verify
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./src/app.js"></script>
+</body>
+
+</html>
