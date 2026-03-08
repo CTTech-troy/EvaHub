@@ -66,8 +66,8 @@ const config = {
   USDT_ADDRESS: 'TX7YRCwUBZAjqEJEJV2fmEggG3SehQkFQS',
   APP_NAME: 'EvaHub',
   APP_VERSION: '1.0.0',
-  HOST_URL: 'http://localhost:5500',
-  BACKEND_URL: 'http://localhost:3000' // adjust if server runs on different port
+  HOST_URL: 'https://evahub.netlify.app',
+  BACKEND_URL: 'https://evahub.netlify.app' // adjust if backend is elsewhere
 };
 
 // tier requirements used by renderState logic
@@ -443,8 +443,8 @@ function renderState() {
     // --- show dashboard pending indicator if needed
     updatePendingNotice();
     let hostUrl = config.HOST_URL || (window.location.origin + window.location.pathname);
-    // if still using localhost/ file, leave as config value so it can be switched easily
-    if (hostUrl.includes('localhost') || window.location.protocol === 'file:') {
+    // if still using the original dev host, leave as config value so it can be switched easily
+    if (hostUrl.includes('localhost') || hostUrl.includes('evahub.netlify.app') || window.location.protocol === 'file:') {
       hostUrl = config.HOST_URL; // change this env variable for production
     }
     // Ensure the URL ends with the file name for proper routing

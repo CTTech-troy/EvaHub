@@ -197,7 +197,7 @@ function renderState() {
     // Earn tracking string - Format for localhost instead of vscode-webview
     let hostUrl = window.location.origin;
     if (hostUrl.includes('vscode-webview')) {
-      hostUrl = 'http://localhost';
+      hostUrl = 'https://evahub.netlify.app';
     }
     hostUrl += window.location.pathname;
     inviteLinkInput.value = `${hostUrl}?invite=${encodeURIComponent(state.name)}`;

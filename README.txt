@@ -18,7 +18,7 @@ By default it listens on port 3000. Set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_
 
 3. Serve the frontend. You can open `index.html` in the browser or use a local server such as Live Server (port 5500 is assumed).
 
-4. Ensure `config.BACKEND_URL` in `src/app.js` points to your backend (`http://localhost:3000`).
+4. Ensure `config.BACKEND_URL` in `src/app.js` points to your backend (e.g. `https://evahub.netlify.app`).
 
 ## Payment flow
 
