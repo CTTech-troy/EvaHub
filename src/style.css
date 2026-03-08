@@ -2527,3 +2527,136 @@ h5 {
   width: 14px;
   height: 14px;
 }
+
+/* Payment Modal Responsive Styles */
+.payment-method-selector {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  padding: 0 40px !important;
+}
+
+.payment-method-btn {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px 12px !important;
+  gap: 8px !important;
+  border: 2px solid var(--glass-border) !important;
+  transition: var(--transition) !important;
+}
+
+.payment-method-btn span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.payment-method-btn:hover {
+  border-color: var(--accent-main) !important;
+  background: rgba(255, 123, 0, 0.05) !important;
+}
+
+.payment-method-btn.active {
+  border-color: var(--accent-main) !important;
+  background: rgba(255, 123, 0, 0.15) !important;
+  color: var(--accent-main) !important;
+}
+
+@media (max-width: 767px) {
+  .payment-method-selector {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    padding: 0 24px !important;
+  }
+
+  .modal-body {
+    padding: 0 24px 24px !important;
+  }
+
+  .modal-body div > div {
+    padding: 16px !important;
+  }
+
+  .modal-body h4 {
+    font-size: 14px !important;
+  }
+
+  .modal-body label {
+    font-size: 12px !important;
+  }
+
+  .modal-body input,
+  .modal-body select {
+    font-size: 14px !important;
+    padding: 10px !important;
+  }
+
+  /* Address display on mobile */
+  .modal-body div > div > div {
+    font-size: 11px !important;
+    padding: 10px !important;
+    word-break: break-all !important;
+  }
+}
+
+@media (max-width: 479px) {
+  .payment-method-selector {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    padding: 0 16px !important;
+  }
+
+  .payment-method-btn {
+    padding: 12px 10px !important;
+    font-size: 12px !important;
+  }
+
+  .payment-method-btn span {
+    font-size: 12px;
+  }
+
+  .payment-method-btn i {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .modal-body {
+    padding: 0 16px 16px !important;
+  }
+
+  .modal-body > div {
+    padding: 12px !important;
+    border-radius: 12px !important;
+  }
+
+  .modal-body h4 {
+    font-size: 13px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .modal-body p {
+    font-size: 11px !important;
+  }
+
+  .modal-body label {
+    font-size: 11px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .modal-body input,
+  .modal-body select {
+    font-size: 13px !important;
+    padding: 8px !important;
+  }
+
+  .modal-body div > div > div {
+    font-size: 10px !important;
+    padding: 8px !important;
+  }
+
+  .modal-body .platform-link {
+    font-size: 10px !important;
+    padding: 6px 8px !important;
+  }
+}

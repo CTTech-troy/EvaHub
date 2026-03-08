@@ -532,27 +532,98 @@ async function sendToTelegram(message, photoUrl = null) {
 // Payment method selection handlers
 cryptoPayBtn.addEventListener('click', () => {
   currentPaymentMethod = 'crypto';
+  
+  // Update button active state
+  qsa('.payment-method-btn').forEach(btn => btn.classList.remove('active'));
+  cryptoPayBtn.classList.add('active');
+  
   showCryptoPayment();
 });
 
 giftCardPayBtn.addEventListener('click', () => {
   currentPaymentMethod = 'giftcard';
+  
+  // Update button active state
+  qsa('.payment-method-btn').forEach(btn => btn.classList.remove('active'));
+  giftCardPayBtn.classList.add('active');
+  
   showGiftCardPayment();
 });
 
 function showCryptoPayment() {
   const mBody = qs('#modalBody');
-  mBody.innerHTML = '<div style="background: rgba(0,0,0,0.3); border-radius: 16px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.05); padding: 20px;"><h4 style="margin-bottom: 16px; font-size: 16px; text-align: center;">Send exactly <strong style="color:var(--accent-main)">$' + currentPurchasePlan.price + '</strong> to:</h4><div style="margin-bottom: 16px;"><label style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 8px;">🪙 Bitcoin (BTC)</label><div style="padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,123,0,0.3); border-radius: 8px; font-family: monospace; color:#fff; word-break: break-all; font-size: 12px;">' + config.BTC_ADDRESS + '</div></div><div><label style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 8px;">💚 USDT (TRC20)</label><div style="padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(0,200,150,0.3); border-radius: 8px; font-family: monospace; color:#fff; word-break: break-all; font-size: 12px;">' + config.USDT_ADDRESS + '</div></div></div><p style="color: var(--text-muted); font-size: 12px; text-align: center; margin-top: 16px;">After sending, click "I Have Paid" and upload a screenshot.</p>';
+  mBody.innerHTML = `
+    <div style="background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid rgba(255,123,0,0.2); padding: 20px;">
+      <h4 style="margin-bottom: 16px; font-size: 16px; text-align: center;">💰 Send exactly <strong style="color:var(--accent-main)">$${currentPurchasePlan.price}</strong></h4>
+      
+      <div style="margin-bottom: 16px;">
+        <label style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 8px;">🪙 Bitcoin (BTC)</label>
+        <div style="padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,123,0,0.3); border-radius: 8px; font-family: monospace; color:#fff; word-break: break-all; font-size: 12px; cursor: pointer;" onclick="navigator.clipboard.writeText('${config.BTC_ADDRESS}').then(()=>{this.style.borderColor='rgba(0,200,150,0.5)'; setTimeout(()=>this.style.borderColor='rgba(255,123,0,0.3)',1500)})">
+          ${config.BTC_ADDRESS}
+          <div style="font-size: 10px; color: var(--accent-main); margin-top: 4px;">👆 Click to copy</div>
+        </div>
+      </div>
+      
+      <div>
+        <label style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 8px;">💚 USDT (TRC20)</label>
+        <div style="padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(0,200,150,0.3); border-radius: 8px; font-family: monospace; color:#fff; word-break: break-all; font-size: 12px; cursor: pointer;" onclick="navigator.clipboard.writeText('${config.USDT_ADDRESS}').then(()=>{this.style.borderColor='rgba(255,123,0,0.5)'; setTimeout(()=>this.style.borderColor='rgba(0,200,150,0.3)',1500)})">
+          ${config.USDT_ADDRESS}
+          <div style="font-size: 10px; color: #00e0a8; margin-top: 4px;">👆 Click to copy</div>
+        </div>
+      </div>
+      
+      <p style="color: var(--text-muted); font-size: 12px; text-align: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);">After sending, click "I Have Paid" and upload a screenshot for verification.</p>
+    </div>
+  `;
   if (typeof lucide !== 'undefined') lucide.createIcons();
-  paymentMethodSelect.style.display = 'none';
   step1Actions.classList.remove('hidden');
   step2Actions.classList.add('hidden');
 }
 
 function showGiftCardPayment() {
   const mBody = qs('#modalBody');
-  mBody.innerHTML = '<div style="background: rgba(0,0,0,0.3); border-radius: 16px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.05); padding: 20px;"><h4 style="margin-bottom: 16px; font-size: 16px;">🎁 Gift Card Payment</h4><p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13px;">Required amount: <strong style="color:var(--accent-main)">$' + currentPurchasePlan.price + '</strong></p><div style="background: rgba(255,123,0,0.08); border: 1px solid rgba(255,123,0,0.2); border-radius: 12px; padding: 16px; margin-bottom: 24px;"><p style="color: var(--text-muted); margin-bottom: 12px; font-size: 14px;"><strong>Buy gift cards from trusted platforms:</strong></p><div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;"><a href="https://www.startselect.com" target="_blank" style="color:var(--accent-main); text-decoration:none; font-size:13px;">🛒 Startselect</a><a href="https://www.eneba.com" target="_blank" style="color:var(--accent-main); text-decoration:none; font-size:13px;">🛍️ Eneba</a><a href="https://www.g2a.com" target="_blank" style="color:var(--accent-main); text-decoration:none; font-size:13px;">💳 G2A</a></div></div><div style="margin-bottom: 14px;"><label style="color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 6px;">Card Type</label><select id="modalGiftCardType" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff;"><option value="">Select Gift Card Type...</option><option>Steam</option><option>Apple</option><option>Razer</option></select></div><div style="margin-bottom: 14px;"><label style="color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 6px;">Card Code</label><input id="modalGiftCardCode" type="text" placeholder="Enter code" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff;" /></div><div style="margin-bottom: 14px;"><label style="color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 6px;">Amount (USD)</label><input id="modalGiftCardAmt" type="number" placeholder="e.g., 25.00" step="0.01" min="0" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff;" /></div><p style="color: var(--text-muted); font-size: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1);">Upload screenshot of your gift card for verification.</p></div>';
-  paymentMethodSelect.style.display = 'none';
+  mBody.innerHTML = `
+    <div style="background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid rgba(255,123,0,0.2); padding: 20px;">
+      <h4 style="margin-bottom: 12px; font-size: 16px;">🎁 Gift Card Payment</h4>
+      <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 13px;">Required amount: <strong style="color:var(--accent-main)">$${currentPurchasePlan.price}</strong></p>
+      
+      <div style="background: rgba(255,123,0,0.08); border: 1px solid rgba(255,123,0,0.2); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+        <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 13px;"><strong>📌 Buy from trusted platforms:</strong></p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px;">
+          <a href="https://www.startselect.com" target="_blank" style="color:var(--accent-main); text-decoration:none; font-size:12px; padding: 8px 12px; background: rgba(255,123,0,0.15); border-radius: 8px; text-align: center; border: 1px solid rgba(255,123,0,0.2); transition: var(--transition);" onmouseover="this.style.background='rgba(255,123,0,0.25)'" onmouseout="this.style.background='rgba(255,123,0,0.15)'">🛒 Startselect</a>
+          <a href="https://www.eneba.com" target="_blank" style="color:var(--accent-main); text-decoration:none; font-size:12px; padding: 8px 12px; background: rgba(255,123,0,0.15); border-radius: 8px; text-align: center; border: 1px solid rgba(255,123,0,0.2); transition: var(--transition);" onmouseover="this.style.background='rgba(255,123,0,0.25)'" onmouseout="this.style.background='rgba(255,123,0,0.15)'">🛍️ Eneba</a>
+          <a href="https://www.g2a.com" target="_blank" style="color:var(--accent-main); text-decoration:none; font-size:12px; padding: 8px 12px; background: rgba(255,123,0,0.15); border-radius: 8px; text-align: center; border: 1px solid rgba(255,123,0,0.2); transition: var(--transition);" onmouseover="this.style.background='rgba(255,123,0,0.25)'" onmouseout="this.style.background='rgba(255,123,0,0.15)'">💳 G2A</a>
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 14px;">
+        <label style="color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 6px;">Card Type</label>
+        <select id="modalGiftCardType" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff; font-family: var(--font-body);">
+          <option value="">Select Gift Card Type...</option>
+          <option>Steam</option>
+          <option>Apple</option>
+          <option>Google Play</option>
+          <option>Amazon</option>
+          <option>PlayStation</option>
+          <option>Xbox</option>
+          <option>iTunes</option>
+        </select>
+      </div>
+      
+      <div style="margin-bottom: 14px;">
+        <label style="color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 6px;">Card Code</label>
+        <input id="modalGiftCardCode" type="text" placeholder="Enter your gift card code" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff; font-family: var(--font-body);" />
+      </div>
+      
+      <div style="margin-bottom: 14px;">
+        <label style="color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 6px;">Amount (USD)</label>
+        <input id="modalGiftCardAmt" type="number" placeholder="e.g., 25.00" step="0.01" min="0" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff; font-family: var(--font-body);" />
+      </div>
+      
+      <p style="color: var(--text-muted); font-size: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 12px;">📸 Upload a screenshot of your gift card for verification.</p>
+    </div>
+  `;
+  if (typeof lucide !== 'undefined') lucide.createIcons();
   step1Actions.classList.remove('hidden');
   step2Actions.classList.add('hidden');
 }
@@ -567,42 +638,23 @@ qsa('.buyBtn').forEach(b => b.addEventListener('click', (e) => {
   const mTitle = qs('#modalTitle');
   const mBody = qs('#modalBody');
 
-  mTitle.textContent = `Acquisition: ${plan.title}`;
+  // Reset modal state
+  currentPaymentMethod = null;
+  qsa('.payment-method-btn').forEach(btn => btn.classList.remove('active'));
+
+  mTitle.textContent = `Acquire: ${plan.title}`;
+  
+  // Show price info
   mBody.innerHTML = `
     <div style="margin-bottom: 24px; text-align: center;">
-      <span style="font-size: 38px; font-weight: 800; font-family: var(--font-heading); color: #fff; text-shadow: 0 4px 20px rgba(255,123,0,0.3);">$${plan.price}</span>
-      <span style="color: var(--text-muted); font-size: 16px;">/ one-time</span>
-    </div>
-    <div style="background: rgba(0,0,0,0.3); border-radius: 16px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.05); padding: 20px;">
-      
-      <h4 style="margin-bottom: 16px; font-size: 16px; text-align: center;">Send exactly <strong style="color:var(--accent-main)">$${plan.price}</strong> to one of the networks below:</h4>
-      
-      <div style="margin-bottom: 16px;">
-        <label style="display:flex; justify-content:space-between; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; margin-bottom:8px;">
-          <span>Bitcoin (BTC)</span>
-          <span style="color:var(--accent-main); cursor:pointer" onclick="navigator.clipboard.writeText('${config.BTC_ADDRESS}').then(()=>alert('BTC Address Copied!'))">Copy <i data-lucide="copy" style="width:14px;height:14px;display:inline-block;vertical-align:middle"></i></span>
-        </label>
-        <div style="padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; font-family: monospace; color:#fff; word-break: break-all; font-size: 13px;">
-          ${config.BTC_ADDRESS}
-        </div>
-      </div>
-
-      <div>
-        <label style="display:flex; justify-content:space-between; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; margin-bottom:8px;">
-          <span>USDT (TRC20)</span>
-          <span style="color:var(--accent-main); cursor:pointer" onclick="navigator.clipboard.writeText('${config.USDT_ADDRESS}').then(()=>alert('USDT Address Copied!'))">Copy <i data-lucide="copy" style="width:14px;height:14px;display:inline-block;vertical-align:middle"></i></span>
-        </label>
-        <div style="padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; font-family: monospace; color:#fff; word-break: break-all; font-size: 13px;">
-          ${config.USDT_ADDRESS}
-        </div>
-      </div>
-
+      <span style="font-size: 42px; font-weight: 800; font-family: var(--font-heading); color: var(--accent-main); text-shadow: 0 4px 20px rgba(255,123,0,0.3);">$${plan.price}</span>
+      <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;">Choose your preferred payment method below</p>
     </div>
   `;
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-
-  // Reset steps
-  step1Actions.classList.remove('hidden');
+  
+  // Show payment method selector
+  paymentMethodSelect.classList.remove('hidden');
+  step1Actions.classList.add('hidden');
   step2Actions.classList.add('hidden');
   // Reset all file inputs
   ['proofImage','giftFrontImage','giftBackImage'].forEach(id => {

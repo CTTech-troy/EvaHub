@@ -494,12 +494,14 @@
       <div id="modalBody" class="modal-body"></div>
       
       <!-- Payment Method Selection -->
-      <div class="modal-actions" id="paymentMethodSelect" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 40px;">
-        <button id="cryptoPayBtn" class="btn secondary" style="padding: 12px; border: 2px solid var(--glass-border);">
-          <i data-lucide="bitcoin"></i> Crypto
+      <div class="modal-actions payment-method-selector" id="paymentMethodSelect">
+        <button id="cryptoPayBtn" class="btn secondary payment-method-btn" data-method="crypto">
+          <i data-lucide="bitcoin"></i>
+          <span>Crypto Payment</span>
         </button>
-        <button id="giftCardPayBtn" class="btn secondary" style="padding: 12px; border: 2px solid var(--glass-border);">
-          <i data-lucide="gift"></i> Gift Card
+        <button id="giftCardPayBtn" class="btn secondary payment-method-btn" data-method="giftcard">
+          <i data-lucide="gift"></i>
+          <span>Gift Card</span>
         </button>
       </div>
 
