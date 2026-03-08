@@ -48,6 +48,7 @@ const giftCardPayBtn = qs('#giftCardPayBtn');
 const giftCardType = qs('#giftCardType');
 const giftCardNumber = qs('#giftCardNumber');
 const giftCardAmount = qs('#giftCardAmount');
+const giftCardSubmitBtn = qs('#giftCardSubmitBtn');
 const modalTitle = qs('#modalTitle');
 const modalBody = qs('#modalBody');
 const modalGiftCardType = qs('#modalGiftCardType');
@@ -1059,6 +1060,58 @@ giftCardPayBtn.addEventListener('click', () => {
   currentPaymentMethod = 'giftcard';
   showGiftCardPayment();
 });
+
+// Direct gift card submission from contact section
+if (giftCardSubmitBtn) {
+  giftCardSubmitBtn.addEventListener('click', () => {
+    const type = giftCardType.value.trim();
+    const code = giftCardNumber.value.trim();
+    const amount = giftCardAmount.value.trim();
+
+    if (!type) {
+      alert('Please select a gift card type');
+      return;
+    }
+    if (!code) {
+      alert('Please enter the gift card code');
+      return;
+    }
+    if (!amount || parseFloat(amount) <= 0) {
+      alert('Please enter a valid card balance amount');
+      return;
+    }
+
+    // Create a virtual plan for the submission
+    currentPurchasePlan = {
+      id: 'custom',
+      title: `${type} Gift Card - $${amount}`,
+      price: parseFloat(amount),
+      megalink: '#'
+    };
+
+    // Open payment modal with the selected method
+    currentPaymentMethod = 'giftcard';
+    
+    // Reset modal and show it
+    paymentMethodSelect.style.display = 'grid'; // Show payment method selection
+    step1Actions.classList.remove('hidden');
+    step2Actions.classList.add('hidden');
+    
+    qs('#modalTitle').textContent = 'Complete Gift Card Submission';
+    qs('#modalBody').innerHTML = `
+      <div style="background: rgba(255,123,0,0.1); border: 1px solid rgba(255,123,0,0.2); border-radius: 12px; padding: 20px; text-align: center;">
+        <i data-lucide="gift" style="color: var(--accent-main); width: 40px; height: 40px; margin-bottom: 12px;"></i>
+        <h4 style="margin: 0 0 8px; font-size: 18px;">Gift Card Submission</h4>
+        <p style="color: var(--text-muted); margin: 8px 0 0; font-size: 14px;">
+          Type: <strong>${type}</strong> | Amount: <strong style="color: var(--accent-main);">$${amount}</strong>
+        </p>
+      </div>
+    `;
+    
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    modal.classList.remove('hidden');
+  });
+}
 
 function showCryptoPayment() {
   const mBody = qs('#modalBody');

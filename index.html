@@ -75,20 +75,21 @@
               <i data-lucide="fingerprint" class="auth-icon"></i>
             </div>
             <h2>Enter the Hub</h2>
-            <p class="subtitle" style="margin-bottom: 30px;">Authenticate to browse premium courses or purchase a
-              bundle.</p>
-            <div class="input-group">
-              <i data-lucide="user"></i>
-              <input id="inputName" type="text" placeholder="Choose a Display Name" />
-            </div>
-            <div class="input-group">
-              <i data-lucide="mail"></i>
-              <input id="inputEmail" type="email" placeholder="Email Address (Optional)" />
-            </div>
-            <button id="createBtn" class="btn primary glow-btn" style="width: 100%; margin: 10px 0 20px;">
-              <span>Unlock Gateway</span>
-              <i data-lucide="arrow-right"></i>
-            </button>
+            <p class="subtitle">Authenticate to browse premium courses</p>
+            <form class="auth-form" onsubmit="return false;">
+              <div class="input-group">
+                <i data-lucide="user"></i>
+                <input id="inputName" type="text" placeholder="Display Name" />
+              </div>
+              <div class="input-group">
+                <i data-lucide="mail"></i>
+                <input id="inputEmail" type="email" placeholder="Email (Optional)" />
+              </div>
+              <button id="createBtn" type="button" class="btn primary glow-btn btn-full">
+                <span>Unlock Gateway</span>
+                <i data-lucide="arrow-right"></i>
+              </button>
+            </form>
           </div>
         </div>
       </section>
@@ -417,51 +418,57 @@
         <p class="muted-text small mt-4" style="text-align: center;">Send the exact tier amount to any of the addresses above. Then return to the <strong>Purchase Modal</strong> via the Buy tab to verify your Payment Hash (TXID).</p>
 
         <!-- Gift Card Payments -->
-        <h3 style="margin-bottom: 20px; font-size: 20px; margin-top: 40px;">🎁 Gift Card Payment</h3>
-        <div class="card glass-card tilt-effect strict" style="max-width: 600px;">
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-            <i data-lucide="gift" style="color: var(--accent-main); width: 24px; height: 24px;"></i>
-            <h4 style="margin: 0; font-size: 18px;">Purchase with Gift Card</h4>
+        <h3 class="section-subheader">🎁 Gift Card Payment</h3>
+        <div class="card glass-card tilt-effect strict gift-card-container">
+          <div class="gift-header">
+            <i data-lucide="gift"></i>
+            <h4>Purchase with Gift Card</h4>
           </div>
           
-          <div style="background: rgba(255,123,0,0.08); border: 1px solid rgba(255,123,0,0.2); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
-            <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 14px;"><strong>Buy gift cards from trusted platforms:</strong></p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-              <a href="https://www.startselect.com" target="_blank" style="padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,123,0,0.3); border-radius: 8px; text-align: center; text-decoration: none; color: var(--accent-main); font-weight: 600; font-size: 13px; transition: all 0.3s;">🛒 Startselect</a>
-              <a href="https://www.eneba.com" target="_blank" style="padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,123,0,0.3); border-radius: 8px; text-align: center; text-decoration: none; color: var(--accent-main); font-weight: 600; font-size: 13px; transition: all 0.3s;">🛍️ Eneba</a>
-              <a href="https://www.g2a.com" target="_blank" style="padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,123,0,0.3); border-radius: 8px; text-align: center; text-decoration: none; color: var(--accent-main); font-weight: 600; font-size: 13px; transition: all 0.3s;">💳 G2A</a>
+          <div class="gift-platforms">
+            <p><strong>Buy from trusted platforms:</strong></p>
+            <div class="platform-links">
+              <a href="https://www.startselect.com" target="_blank" class="platform-link">🛒 Startselect</a>
+              <a href="https://www.eneba.com" target="_blank" class="platform-link">🛍️ Eneba</a>
+              <a href="https://www.g2a.com" target="_blank" class="platform-link">💳 G2A</a>
             </div>
           </div>
           
-          <div class="form-group">
-            <label>Gift Card Type</label>
-            <div class="select-wrapper">
-              <select id="giftCardType" style="width: 100%; padding: 12px 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 10px; color: #fff; cursor: pointer;">
-                <option value="">Select Gift Card Type...</option>
-                <option value="Steam">Steam Gift Card</option>
-                <option value="Apple">Apple Gift Card</option>
-                <option value="Razer">Razer Gold Gift Card</option>
-              </select>
+          <form class="gift-form" onsubmit="return false;">
+            <div class="form-group">
+              <label>Gift Card Type</label>
+              <div class="select-wrapper">
+                <select id="giftCardType">
+                  <option value="">Select Gift Card Type...</option>
+                  <option value="Steam">Steam Gift Card</option>
+                  <option value="Apple">Apple Gift Card</option>
+                  <option value="Razer">Razer Gold Gift Card</option>
+                </select>
+              </div>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label>Card Code</label>
-            <div class="input-group">
-              <i data-lucide="key"></i>
-              <input id="giftCardNumber" type="text" placeholder="Enter gift card code" />
+            <div class="form-group">
+              <label>Card Code</label>
+              <div class="input-group">
+                <i data-lucide="key"></i>
+                <input id="giftCardNumber" type="text" placeholder="Enter gift card code" />
+              </div>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label>Card Balance Amount</label>
-            <div class="input-group">
-              <i data-lucide="dollar-sign"></i>
-              <input id="giftCardAmount" type="number" placeholder="e.g., 25.00" step="0.01" />
+            <div class="form-group">
+              <label>Card Balance Amount</label>
+              <div class="input-group">
+                <i data-lucide="dollar-sign"></i>
+                <input id="giftCardAmount" type="number" placeholder="e.g., 25.00" step="0.01" />
+              </div>
             </div>
-          </div>
 
-          <p style="color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--glass-border);">
+            <button type="button" id="giftCardSubmitBtn" class="btn primary glow-btn btn-full gift-submit-btn">
+              <i data-lucide="send"></i> Submit Gift Card
+            </button>
+          </form>
+
+          <p class="gift-info">
             After selecting a plan via the <strong>Premium Plans</strong> tab, you can submit gift card proof for verification.
           </p>
         </div>
