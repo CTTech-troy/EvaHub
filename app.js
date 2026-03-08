@@ -60,7 +60,9 @@ const modalGiftCardAmt = qs('#modalGiftCardAmt');
 // For production, these values should be injected at build time
 const config = {
   TELEGRAM_BOT_TOKEN: '8591581410:AAHGxcDuQdS7Y4x9gOjHD9hP7-GvPPQ_CCE',
-  TELEGRAM_CHAT_ID: '7999450591',
+  TELEGRAM_CHAT_ID: '52504489',
+  // admin username (without @) for direct Telegram links
+  TELEGRAM_ADMIN_USERNAME: 'Sqyas6',
   BTC_ADDRESS: 'bc1q869e5h8kk4w55v586mz3f99pg5c8czwjkj3gdh',
   USDT_ADDRESS: 'TX7YRCwUBZAjqEJEJV2fmEggG3SehQkFQS',
   APP_NAME: 'EvaHub',
@@ -462,21 +464,68 @@ function analyzePaymentImage(file) {
   });
 }
 
-// Telegram integration function
-function sendToTelegram(message, photoUrl = null) {
+// Function to resize image for compression
+function resizeImage(file, maxWidth = 800, maxHeight = 800, quality = 0.7) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      let { width, height } = img;
+      if (width > height) {
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(resolve, 'image/jpeg', quality);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// Telegram integration function - sends photo first, then message only if photo succeeds
+async function sendToTelegram(message, photoUrl = null) {
+  const botToken = TELEGRAM_BOT_TOKEN;
   const chatId = TELEGRAM_CHAT_ID;
-  if (photoUrl) {
-    fetch(TELEGRAM_API + TELEGRAM_BOT_TOKEN + '/sendPhoto', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, photo: photoUrl, caption: message, parse_mode: 'HTML' })
-    }).catch(e => console.log('Telegram photo sent'));
-  } else {
-    fetch(TELEGRAM_API + TELEGRAM_BOT_TOKEN + '/sendMessage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'HTML' })
-    }).catch(e => console.log('Telegram message sent'));
+
+  // Validate inputs
+  if (!botToken || !chatId) {
+    console.error('[TELEGRAM] Missing bot token or chat ID in config', { botToken: !!botToken, chatId: !!chatId });
+    return;
+  }
+
+  if (!message && !photoUrl) {
+    console.warn('[TELEGRAM] No message or photo provided to sendToTelegram');
+    return;
+  }
+
+  try {
+    if (photoUrl) {
+      // Send photo first
+      console.log('[TELEGRAM] Sending photo...');
+      const photoSuccess = await sendPhotoToTelegram(botToken, chatId, photoUrl, 'Payment Proof');
+      
+      // If photo sent successfully, send the message as follow-up
+      if (photoSuccess && message) {
+        console.log('[TELEGRAM] Photo sent successfully, now sending follow-up message...');
+        await new Promise(resolve => setTimeout(resolve, 500)); // Small delay before follow-up
+        await sendMessageToTelegram(botToken, chatId, message);
+      }
+    } else {
+      // Send text message only
+      await sendMessageToTelegram(botToken, chatId, message);
+    }
+  } catch (err) {
+    console.error('[TELEGRAM] sendToTelegram exception:', err);
   }
 }
 
@@ -555,7 +604,11 @@ qsa('.buyBtn').forEach(b => b.addEventListener('click', (e) => {
   // Reset steps
   step1Actions.classList.remove('hidden');
   step2Actions.classList.add('hidden');
-  proofImage.value = ''; // reset file input
+  // Reset all file inputs
+  ['proofImage','giftFrontImage','giftBackImage'].forEach(id => {
+    const el = qs('#' + id);
+    if (el) el.value = '';
+  });
 
   modal.classList.remove('hidden');
 }));
@@ -572,46 +625,159 @@ iHavePaidBtn.addEventListener('click', () => {
       <p style="color: var(--text-muted);">
         Please upload a screenshot of your successful transaction to acquire <strong>${currentPurchasePlan.title}</strong>. 
       </p>
+      <p style="color:var(--text-muted); font-size:13px; margin-top:8px;">
+        Need help with the file? <a href="https://t.me/${config.TELEGRAM_ADMIN_USERNAME}" target="_blank" style="color:var(--accent-main);">Contact support</a>
+      </p>
     </div>
   `;
   if (typeof lucide !== 'undefined') lucide.createIcons();
 });
 
 confirmPaid.addEventListener('click', () => {
-  if (!proofImage.files || proofImage.files.length === 0) {
-    alert('Missing Proof: Please upload a screenshot of your payment transfer before submitting.');
+  // collect files based on payment method
+  let files = [];
+  if (currentPaymentMethod === 'crypto') {
+    const proof = qs('#proofImage');
+    if (!proof || !proof.files || proof.files.length !== 1) {
+      alert('Crypto payments require exactly one proof screenshot.');
+      return;
+    }
+    files.push(proof.files[0]);
+  } else if (currentPaymentMethod === 'giftcard') {
+    const front = qs('#giftFrontImage');
+    const back = qs('#giftBackImage');
+    if (!front || !front.files || front.files.length === 0) {
+      alert('Please upload the front image of the gift card.');
+      return;
+    }
+    files.push(front.files[0]);
+    if (back && back.files && back.files.length > 0) files.push(back.files[0]);
+    if (files.length > 2) {
+      alert('Too many images provided.');
+      return;
+    }
+  } else {
+    alert('Payment method not selected.');
     return;
   }
 
   // Analyze uploaded image
-  analyzePaymentImage(proofImage.files[0]).then(analysis => {
+  analyzePaymentImage(files[0]).then(analysis => {
     if (!analysis.valid) {
       alert('⚠️ Image Quality Issue: ' + analysis.reason + '\n\nPlease upload a clearer screenshot of your payment confirmation.');
       return;
     }
 
-    // Build payment info
-    let paymentInfo = '👤 User: ' + state.name + '\n📧 Email: ' + state.email + '\n📦 Plan: ' + currentPurchasePlan.title + '\n💰 Amount: $' + currentPurchasePlan.price + '\n✅ Image Score: ' + analysis.score.toFixed(1) + '/10';
+    // Generate unique approval ID
+    const approvalId = Date.now().toString(36) + Math.random().toString(36).substr(2,5);
     
+    // Build approval link for admin
+    const approvalLink = window.location.origin + window.location.pathname + '?approve=' + approvalId;
+
+    // Build payment details message for Telegram
+    let paymentDetails = `💳 NEW PAYMENT RECEIVED\n`;
+    paymentDetails += `👤 User: ${state.name}\n`;
+    paymentDetails += `📧 Email: ${state.email || 'N/A'}\n`;
+    paymentDetails += `📦 Plan: ${currentPurchasePlan.title}\n`;
+    paymentDetails += `💰 Amount: $${currentPurchasePlan.price}\n`;
+    paymentDetails += `✅ Image Score: ${analysis.score.toFixed(1)}/10\n\n`;
+
     if (currentPaymentMethod === 'giftcard') {
       const cardType = qs('#modalGiftCardType') ? qs('#modalGiftCardType').value : 'Unknown';
       const cardAmt = qs('#modalGiftCardAmt') ? qs('#modalGiftCardAmt').value : 'N/A';
-      paymentInfo += '\n\n🎁 GIFT CARD:\nType: ' + cardType + '\nAmount: $' + cardAmt;
+      paymentDetails += `🎁 GIFT CARD\nType: ${cardType}\nAmount: $${cardAmt}\n\n`;
     } else {
-      paymentInfo += '\n\n🪙 CRYPTO PAYMENT';
+      paymentDetails += `🪙 CRYPTO PAYMENT\n\n`;
     }
 
-    // Convert image to base64 and send to Telegram
-    const imgReader = new FileReader();
-    imgReader.onload = (e) => {
-      sendToTelegram('💳 NEW PAYMENT RECEIVED\n' + paymentInfo, e.target.result);
-    };
-    imgReader.readAsDataURL(proofImage.files[0]);
+    paymentDetails += `APPROVAL LINK: ${approvalLink}`;
 
-    qs('#modalTitle').textContent = "Access Granted ✅";
+    // Convert first image to base64 and send to Telegram with full details
+    (async () => {
+      const resizedBlob = await resizeImage(files[0]);
+      const imgReader = new FileReader();
+      imgReader.onload = (e) => {
+        sendToTelegram(paymentDetails, e.target.result);
+      };
+      imgReader.readAsDataURL(resizedBlob);
+    })();
+
+    // Show "Payment Processing" modal while waiting for admin approval
+    qs('#modalTitle').textContent = "⏳ Payment Processing";
     qs('#step2Actions').classList.add('hidden');
+    qs('#modalBody').innerHTML = `
+      <div style="text-align: center; padding: 40px 20px;">
+        <div style="animation: spin 2s linear infinite; display: inline-block; margin-bottom: 20px;">
+          <i data-lucide="loader" style="color: var(--accent-main); width: 48px; height: 48px;"></i>
+        </div>
+        <h3 style="margin-bottom: 15px; font-size: 20px;">Payment Received!</h3>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">Your payment has been submitted for admin verification.</p>
+        <p style="color: var(--text-muted); font-size: 13px; background: rgba(255,123,0,0.1); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+          ⏳ Waiting for admin approval... This modal will update automatically when your access is ready.
+        </p>
+        <p style="color: var(--text-muted); font-size: 12px;">
+          Approval ID: <strong style="font-family: monospace; color: var(--accent-main);">${approvalId}</strong>
+        </p>
+      </div>
+      <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
+    `;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    qs('#modalBody').innerHTML = '<div style="text-align: center; padding: 20px 0;"><i data-lucide="check-circle" style="color: #00e0a8; width: 64px; height: 64px; margin-bottom: 20px;"></i><h3 style="margin-bottom: 15px; font-size: 20px;">Payment Received!</h3><p style="color: var(--text-muted); margin-bottom: 20px;">Admin is reviewing your payment verification.</p><div style="padding: 16px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 12px; font-family: monospace; font-size: 14px; word-break: break-all; border-left: 3px solid #00e0a8;"><span style="display:block; margin-bottom: 8px; color: var(--text-muted); font-family: var(--font-heading); font-size: 12px; text-transform: uppercase;">Your Content Access Link</span><a href="' + currentPurchasePlan.megalink + '" target="_blank" style="color: var(--accent-main); text-decoration: none;">📥 Access Content Now</a></div></div>';
+    // Store pending approval
+    pendingApprovals.push({
+      id: approvalId,
+      user: state.name,
+      planTitle: currentPurchasePlan.title,
+      planLink: currentPurchasePlan.megalink,
+      proofUrl: ''
+    });
+    
+    // Award points and unlock content based on payment method
+    if (currentPaymentMethod === 'giftcard') {
+      state.invites += 1;
+    } else {
+      state.invites += 2;
+    }
+    state.videos += 10;
+    save();
+    renderState();
+
+    // Set up real-time approval listener via BroadcastChannel
+    if ('BroadcastChannel' in window) {
+      const approvalListener = (e) => {
+        const msg = e.data;
+        if (msg && msg.type === 'approval' && msg.user === state.name && msg.accessLinks) {
+          // Admin approved! Show success with random access link
+          bc.removeEventListener('message', approvalListener);
+          
+          // Pick the access link from the approval
+          const randomLink = msg.accessLinks[0];
+          
+          qs('#modalTitle').textContent = "✅ Access Granted!";
+          qs('#modalBody').innerHTML = `
+            <div style="text-align: center; padding: 20px 0;">
+              <i data-lucide="check-circle" style="color: #00e0a8; width: 64px; height: 64px; margin-bottom: 20px;"></i>
+              <h3 style="margin-bottom: 15px; font-size: 20px;">Payment Approved!</h3>
+              <p style="color: var(--text-muted); margin-bottom: 20px;">Your payment has been verified. Click the link below to access your content.</p>
+              <div style="padding: 16px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 12px; border-left: 3px solid #00e0a8;">
+                <a href="${randomLink}" target="_blank" style="color: var(--accent-main); text-decoration: none; font-weight: 600; font-size: 14px;">
+                  📥 Access Your Course Bundle
+                </a>
+              </div>
+            </div>
+          `;
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+          
+          // Mark as seen and clean up
+          state.hasSeenApproval = true;
+          pendingApprovals = pendingApprovals.filter(p => p.user !== state.name);
+          save();
+        }
+      };
+      
+      // Listen for approval messages
+      bc.addEventListener('message', approvalListener);
+    }
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
     // Award points and unlock content based on payment method
@@ -620,7 +786,7 @@ confirmPaid.addEventListener('click', () => {
     } else {
       state.invites += 2; // Crypto payment = 2 points
     }
-    
+
     state.videos += 10;
     save();
     renderState();
